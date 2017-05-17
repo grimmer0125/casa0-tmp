@@ -1,5 +1,12 @@
+diff --git a/asap b/asap
+deleted file mode 160000
+index d55a3ae24..000000000
+--- a/asap
++++ /dev/null
+@@ -1 +0,0 @@
+-Subproject commit d55a3ae24a923d8e198b6356176c71cfe0cb9bb7
 diff --git a/code/CMakeLists.txt b/code/CMakeLists.txt
-index fb0cba861..f0e19daff 100644
+index fb0cba861..d9edc0cac 100644
 --- a/code/CMakeLists.txt
 +++ b/code/CMakeLists.txt
 @@ -46,15 +46,15 @@ message("SVNINFOSTATUS: ${SVNINFOSTATUS}")
@@ -268,7 +275,7 @@ index fb0cba861..f0e19daff 100644
  	      LIBS gsl
     	      DEPENDS GSLCBLAS
              )
-@@ -1077,10 +1080,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux AND GSL_LIBRARIES)
+@@ -1077,79 +1080,79 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux AND GSL_LIBRARIES)
  endif( )
  
  # Java
@@ -276,13 +283,151 @@ index fb0cba861..f0e19daff 100644
 -  VERSION 1.5
 -  PROGRAMS java
 -  PROG_VERSION "-version")
+-
+-if ( ${dbusxx} STREQUAL dbus-c++ )
+-  # C++ DBus
+-  #
+-  # The header file dbus/dbus-arch-deps.h exists on some but not all systems, in a directory
+-  # for itself
+-  #
+-  # Form all possible DBus prefixes and use them as hints to casa_find()
+-  #
+-  set( dbus_prefix "" )
+-  foreach( _p ${CMAKE_INSTALL_PREFIX} ${casa_packages}  /sw /opt/local /usr/local /opt /usr )
+-    foreach( _l lib lib64 )
+-      list( APPEND dbus_prefix ${_p}/dbus-1.0 )
+-      list( APPEND dbus_prefix ${_p}/${_l}/dbus-1.0 )
+-      list( APPEND dbus_prefix ${_p}/${_l}/qt-4.3.4/dbus )
+-      list( APPEND dbus_prefix ${_p}/${_l}/qt-4.3.4/dbus/${_l}/dbus-1.0 )
+-    endforeach()
+-  endforeach()
+-  # Debian arch specific header location (64 bit only)
+-  list( APPEND dbus_prefix /usr/lib/x86_64-linux-gnu/dbus-1.0)
+-
+-  casa_find( DBUSXX_ARCH
+-    INCLUDES dbus/dbus-arch-deps.h
+-    PREFIX_HINTS /usr/lib64/dbus-1.0 ${DBUS_ARCH_DIR} ${dbus_prefix}
+-    NO_CHECK   # This header does not compile if included directly
+-    NO_REQUIRE
+-    IGNORE /usr/lib64/casapy
+-  )
+-  if( DBUSXX_ARCH_FOUND )
+-    set( dbus_depends DBUSXX_ARCH )
+-  endif()
+-
+-  casa_find( DBUSXX
+-    INCLUDES dbus/dbus.h
+-             dbus-c++/dbus.h
+-    INCLUDES_SUFFIXES dbus-1.0 dbus-c++-1
+-    PREFIX_HINTS ${DBUS_ROOT_DIR} ${dbus_prefix}
+-    LIBS dbus-c++-1
+-    PROGRAMS dbusxx-xml2cpp
+-    DEPENDS ${dbus_depends}
+-    IGNORE /usr/lib64/casapy
+-  )
+-  set( dbus-xml-2-cxx ${DBUSXX_dbusxx-xml2cpp_EXECUTABLE} )
+-  set( DBUS_INCLUDE_DIRS ${DBUSXX_INCLUDE_DIRS} )
+-  set( DBUS_LIBRARIES ${DBUSXX_LIBRARIES} )
+-else( )
+-  casa_find( DBUSPP_ARCH
+-    INCLUDES dbus/dbus-arch-deps.h
+-    PREFIX_HINTS ${DBUS_ARCH_DIR} ${casa_packages}/lib/dbus-1.0 ${dbus-arch-path-guess} /usr/lib64/dbus-1.0
+-    NO_CHECK   # This header does not compile if included directly
+-    NO_REQUIRE
+-  )
+-  if( DBUSPP_ARCH_FOUND )
+-    set( dbus_depends DBUSPP_ARCH )
+-  endif()
+-
+-  casa_find( DBUSPP
+-    INCLUDES dbus/dbus.h
+-             dbus-cpp/dbus.h
+-    INCLUDES_SUFFIXES dbus-1.0 dbus-cpp
+-    PREFIX_HINTS ${DBUS_ROOT_DIR} ${casa_packages}
+-    LIBS ${dbus-cpp-library-name}
+-    PROGRAMS dbuspp-xml2cpp
+-    DEPENDS ${dbus_depends}
+-  )
+-  set( dbus-xml-2-cxx ${DBUSPP_dbuspp-xml2cpp_EXECUTABLE} )
+-  set( DBUS_INCLUDE_DIRS ${DBUSPP_INCLUDE_DIRS} )
+-  set( DBUS_LIBRARIES ${DBUSPP_LIBRARIES} )
+-endif( )
 +# casa_find( Java
 +#   VERSION 1.5
 +#   PROGRAMS java
 +#  PROG_VERSION "-version")
++
++# if ( ${dbusxx} STREQUAL dbus-c++ )
++#   # C++ DBus
++#   #
++#   # The header file dbus/dbus-arch-deps.h exists on some but not all systems, in a directory
++#   # for itself
++#   #
++#   # Form all possible DBus prefixes and use them as hints to casa_find()
++#   #
++#   set( dbus_prefix "" )
++#   foreach( _p ${CMAKE_INSTALL_PREFIX} ${casa_packages}  /sw /opt/local /usr/local /opt /usr )
++#     foreach( _l lib lib64 )
++#       list( APPEND dbus_prefix ${_p}/dbus-1.0 )
++#       list( APPEND dbus_prefix ${_p}/${_l}/dbus-1.0 )
++#       list( APPEND dbus_prefix ${_p}/${_l}/qt-4.3.4/dbus )
++#       list( APPEND dbus_prefix ${_p}/${_l}/qt-4.3.4/dbus/${_l}/dbus-1.0 )
++#     endforeach()
++#   endforeach()
++#   # Debian arch specific header location (64 bit only)
++#   list( APPEND dbus_prefix /usr/lib/x86_64-linux-gnu/dbus-1.0)
++#
++#   casa_find( DBUSXX_ARCH
++#     INCLUDES dbus/dbus-arch-deps.h
++#     PREFIX_HINTS /usr/lib64/dbus-1.0 ${DBUS_ARCH_DIR} ${dbus_prefix}
++#     NO_CHECK   # This header does not compile if included directly
++#     NO_REQUIRE
++#     IGNORE /usr/lib64/casapy
++#   )
++#   if( DBUSXX_ARCH_FOUND )
++#     set( dbus_depends DBUSXX_ARCH )
++#   endif()
++#
++#   casa_find( DBUSXX
++#     INCLUDES dbus/dbus.h
++#              dbus-c++/dbus.h
++#     INCLUDES_SUFFIXES dbus-1.0 dbus-c++-1
++#     PREFIX_HINTS ${DBUS_ROOT_DIR} ${dbus_prefix}
++#     LIBS dbus-c++-1
++#     PROGRAMS dbusxx-xml2cpp
++#     DEPENDS ${dbus_depends}
++#     IGNORE /usr/lib64/casapy
++#   )
++#   set( dbus-xml-2-cxx ${DBUSXX_dbusxx-xml2cpp_EXECUTABLE} )
++#   set( DBUS_INCLUDE_DIRS ${DBUSXX_INCLUDE_DIRS} )
++#   set( DBUS_LIBRARIES ${DBUSXX_LIBRARIES} )
++# else( )
++#   casa_find( DBUSPP_ARCH
++#     INCLUDES dbus/dbus-arch-deps.h
++#     PREFIX_HINTS ${DBUS_ARCH_DIR} ${casa_packages}/lib/dbus-1.0 ${dbus-arch-path-guess} /usr/lib64/dbus-1.0
++#     NO_CHECK   # This header does not compile if included directly
++#     NO_REQUIRE
++#   )
++#   if( DBUSPP_ARCH_FOUND )
++#     set( dbus_depends DBUSPP_ARCH )
++#   endif()
++#
++#   casa_find( DBUSPP
++#     INCLUDES dbus/dbus.h
++#              dbus-cpp/dbus.h
++#     INCLUDES_SUFFIXES dbus-1.0 dbus-cpp
++#     PREFIX_HINTS ${DBUS_ROOT_DIR} ${casa_packages}
++#     LIBS ${dbus-cpp-library-name}
++#     PROGRAMS dbuspp-xml2cpp
++#     DEPENDS ${dbus_depends}
++#   )
++#   set( dbus-xml-2-cxx ${DBUSPP_dbuspp-xml2cpp_EXECUTABLE} )
++#   set( DBUS_INCLUDE_DIRS ${DBUSPP_INCLUDE_DIRS} )
++#   set( DBUS_LIBRARIES ${DBUSPP_LIBRARIES} )
++# endif( )
  
- if ( ${dbusxx} STREQUAL dbus-c++ )
-   # C++ DBus
+ ## ATM
+ #casa_find( ATM
 @@ -1158,7 +1161,7 @@ endif( )
  #  INCLUDES_SUFFIXES ATM
  #  LIBS aatm
@@ -354,19 +499,48 @@ index fb0cba861..f0e19daff 100644
    ${QT_QTXML_LIBRARY} ${QT_QTUITOOLS_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_OPENGL}
    CACHE FILEPATH "QT4 libraries" FORCE )
  list( REMOVE_ITEM QT4_LIBRARIES "optimized" )
-@@ -1243,10 +1246,11 @@ set( QT4_FOUND TRUE CACHE BOOL "Was QT4 found?" )
+@@ -1242,23 +1245,24 @@ set( QT4_FOUND TRUE CACHE BOOL "Was QT4 found?" )
+ 
  
  # QWT (requires Qt)
- casa_find( QWT
-+NO_LINK
-   VERSION 5.1.1
-   INCLUDES qwt_global.h
-   INCLUDES_SUFFIXES qwt qwt-qt4 qwt5
+-casa_find( QWT
+-  VERSION 5.1.1
+-  INCLUDES qwt_global.h
+-  INCLUDES_SUFFIXES qwt qwt-qt4 qwt5
 -  PREFIX_HINTS 
-+  PREFIX_HINTS
-     ${QWT_ROOT_DIR}
-     ${casa_packages}/qwt-5.2.0
-     ${casa_packages}/qwt-5.2.1-svn
+-    ${QWT_ROOT_DIR}
+-    ${casa_packages}/qwt-5.2.0
+-    ${casa_packages}/qwt-5.2.1-svn
+-    ${casa_packages}/qwt-5.2.3-svn
+-    ${casa_packages}/libexec/qt4
+-  LIBS qwt
+-  CPP_VERSION QWT_VERSION_STR
+-  DEPENDS QT4 )
+-
+-if (QWT_VERSION VERSION_EQUAL 6 OR QWT_VERSION VERSION_GREATER 6)
+-    add_definitions( -DQWT6 )
+-endif()
++# casa_find( QWT
++# NO_LINK
++#   VERSION 5.1.1
++#   INCLUDES qwt_global.h
++#   INCLUDES_SUFFIXES qwt qwt-qt4 qwt5
++#   PREFIX_HINTS
++#     ${QWT_ROOT_DIR}
++#     ${casa_packages}/qwt-5.2.0
++#     ${casa_packages}/qwt-5.2.1-svn
++#     ${casa_packages}/qwt-5.2.3-svn
++#     ${casa_packages}/libexec/qt4
++#   LIBS qwt
++#   CPP_VERSION QWT_VERSION_STR
++#   DEPENDS QT4 )
++#
++# if (QWT_VERSION VERSION_EQUAL 6 OR QWT_VERSION VERSION_GREATER 6)
++#     add_definitions( -DQWT6 )
++# endif()
+ 
+ # Xerces
+ casa_find( XERCES
 @@ -1266,8 +1270,8 @@ casa_find( XERCES
    PREFIX_HINTS ${XERCES_ROOT_DIR}
    INCLUDES xercesc/util/XercesVersion.hpp
