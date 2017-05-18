@@ -1,12 +1,5 @@
-diff --git a/asap b/asap
-deleted file mode 160000
-index d55a3ae24..000000000
---- a/asap
-+++ /dev/null
-@@ -1 +0,0 @@
--Subproject commit d55a3ae24a923d8e198b6356176c71cfe0cb9bb7
 diff --git a/code/CMakeLists.txt b/code/CMakeLists.txt
-index fb0cba861..d9edc0cac 100644
+index fb0cba861..3286b0eb9 100644
 --- a/code/CMakeLists.txt
 +++ b/code/CMakeLists.txt
 @@ -46,15 +46,15 @@ message("SVNINFOSTATUS: ${SVNINFOSTATUS}")
@@ -195,7 +188,7 @@ index fb0cba861..d9edc0cac 100644
          CACHE STRING "Fortran library linker option" FORCE )
      endif()
      message( STATUS "Looking for Fortran runtime libraries -- ${FORTRAN_LIBRARIES}" )
-@@ -898,7 +898,7 @@ if( NOT SKIP_PGPLOT )
+@@ -898,13 +898,14 @@ if( NOT SKIP_PGPLOT )
    if (CMAKE_SYSTEM MATCHES ^Darwin-11 AND NOT LLVMCOMPILER )
       set( CMAKE_SHARED_LINKER_FLAGS "-Wl,-undefined -Wl,error -framework AppKit -lgfortran" )
    else()
@@ -204,7 +197,14 @@ index fb0cba861..d9edc0cac 100644
          set( CMAKE_SHARED_LINKER_FLAGS "-Wl,-undefined -Wl,error -framework AppKit" )
       else()
          set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-undefined -Wl,error" )
-@@ -915,6 +915,7 @@ endif()
+      endif()
+   endif()
+   casa_find( PGPLOT
++    NO_LINK
+     VERSION 5.3.1
+     PREFIX_HINTS ${PGPLOT_ROOT_DIR}
+     INCLUDES cpgplot.h
+@@ -915,6 +916,7 @@ endif()
  # WCSLIB
  if( NOT SKIP_PGPLOT )
    casa_find( WCSLIB
@@ -212,7 +212,7 @@ index fb0cba861..d9edc0cac 100644
      VERSION 4.3
      PREFIX_HINTS ${WCSLIB_ROOT_DIR}
      INCLUDES wcslib/wcsconfig.h
-@@ -927,10 +928,11 @@ if( NOT SKIP_PGPLOT )
+@@ -927,10 +929,11 @@ if( NOT SKIP_PGPLOT )
  #define CASA_STRINGIFY(x) #x
  #define CASA_TOSTRING(x) CASA_STRINGIFY(x)
      std::cout << CASA_TOSTRING(WCSLIB_VERSION)"
@@ -225,7 +225,7 @@ index fb0cba861..d9edc0cac 100644
      VERSION 4.3
      PREFIX_HINTS ${WCSLIB_ROOT_DIR}
      INCLUDES wcslib/wcsconfig.h
-@@ -995,8 +997,8 @@ else()
+@@ -995,8 +998,8 @@ else()
        set( casacore_prefix ${CMAKE_INSTALL_PREFIX}/.. )
    endif()
    set( casacore_libs
@@ -236,7 +236,7 @@ index fb0cba861..d9edc0cac 100644
         casa_fits
         casa_images
         casa_lattices
-@@ -1010,6 +1012,7 @@ else()
+@@ -1010,6 +1013,7 @@ else()
  endif()
  
  casa_find( CASACORE
@@ -244,7 +244,7 @@ index fb0cba861..d9edc0cac 100644
             VERSION 2.0.2
             PREFIX_HINTS ${CASACORE_ROOT_DIR} ${Boost_INCLUDE_DIR}
             DEFINITIONS "-DUseCasacoreNamespace"
-@@ -1022,7 +1025,7 @@ casa_find( CASACORE
+@@ -1022,7 +1026,7 @@ casa_find( CASACORE
             CPP_VERSION CASACORE_VERSION
             RUN_VERSION "casacore::getVersionCASA()"
             DEPENDS LAPACK CFITSIO WCSLIB FFTW3 DL Boost)
@@ -253,7 +253,7 @@ index fb0cba861..d9edc0cac 100644
  # were built with correct linking information, which they are not.
  
  set( CASACORE_DEFINITIONS ${CASACORE_DEFINITIONS}
-@@ -1035,7 +1038,7 @@ set( CASACORE_DEFINITIONS ${CASACORE_DEFINITIONS}
+@@ -1035,7 +1039,7 @@ set( CASACORE_DEFINITIONS ${CASACORE_DEFINITIONS}
  if( CMAKE_SYSTEM_NAME STREQUAL Linux )
    set( CASACORE_DEFINITIONS ${CASACORE_DEFINITIONS}
      -D_FILE_OFFSET_BITS=64
@@ -262,7 +262,7 @@ index fb0cba861..d9edc0cac 100644
      )
  endif()
  
-@@ -1057,10 +1060,10 @@ if( USE_ALMAWVR )
+@@ -1057,10 +1061,10 @@ if( USE_ALMAWVR )
       message(STATUS "Will use CASA-internal version of BNMIN1 ...")
  endif()
  
@@ -275,7 +275,7 @@ index fb0cba861..d9edc0cac 100644
  	      LIBS gsl
     	      DEPENDS GSLCBLAS
              )
-@@ -1077,79 +1080,79 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux AND GSL_LIBRARIES)
+@@ -1077,79 +1081,79 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux AND GSL_LIBRARIES)
  endif( )
  
  # Java
@@ -428,7 +428,7 @@ index fb0cba861..d9edc0cac 100644
  
  ## ATM
  #casa_find( ATM
-@@ -1158,7 +1161,7 @@ endif( )
+@@ -1158,7 +1162,7 @@ endif( )
  #  INCLUDES_SUFFIXES ATM
  #  LIBS aatm
  #  CPP_VERSION ATM_VERSION
@@ -437,7 +437,7 @@ index fb0cba861..d9edc0cac 100644
  #  PREFIX_HINTS ${ATM_ROOT_DIR}
  #)
  
-@@ -1169,8 +1172,8 @@ casa_find( LIBXML2
+@@ -1169,8 +1173,8 @@ casa_find( LIBXML2
    INCLUDES libxml/xmlversion.h
    INCLUDES_SUFFIXES libxml2
    LIBS xml2
@@ -448,7 +448,7 @@ index fb0cba861..d9edc0cac 100644
    )
  
  # XSLT
-@@ -1180,8 +1183,8 @@ casa_find( LIBXSLT
+@@ -1180,8 +1184,8 @@ casa_find( LIBXSLT
    INCLUDES libxslt/xsltconfig.h
    INCLUDES_SUFFIXES libxslt
    LIBS xslt
@@ -459,7 +459,7 @@ index fb0cba861..d9edc0cac 100644
    )
  
  # Do not reuse FindLibXml2.cmake, except this excerpt
-@@ -1201,7 +1204,7 @@ if( ${qt4} STREQUAL casa-qt )
+@@ -1201,7 +1205,7 @@ if( ${qt4} STREQUAL casa-qt )
    if ( EXISTS /opt/casa/02/bin/qmake )
        set( QT_QMAKE_EXECUTABLE /opt/casa/02/bin/qmake )
    elseif ( EXISTS /opt/casa/02/libexec/qt4/bin/qmake )
@@ -468,7 +468,7 @@ index fb0cba861..d9edc0cac 100644
    else( )
        set( QT_QMAKE_EXECUTABLE /usr/lib64/casa/01/bin/qmake )
    endif( )
-@@ -1214,23 +1217,23 @@ endif()
+@@ -1214,23 +1218,23 @@ endif()
  if(CMAKE_SYSTEM_NAME STREQUAL Linux AND EXISTS /usr/lib64/libqwt.so.6 )
    find_package(
      Qt4 ${qt4-version}
@@ -499,7 +499,7 @@ index fb0cba861..d9edc0cac 100644
    ${QT_QTXML_LIBRARY} ${QT_QTUITOOLS_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_OPENGL}
    CACHE FILEPATH "QT4 libraries" FORCE )
  list( REMOVE_ITEM QT4_LIBRARIES "optimized" )
-@@ -1242,23 +1245,24 @@ set( QT4_FOUND TRUE CACHE BOOL "Was QT4 found?" )
+@@ -1242,23 +1246,24 @@ set( QT4_FOUND TRUE CACHE BOOL "Was QT4 found?" )
  
  
  # QWT (requires Qt)
@@ -541,7 +541,7 @@ index fb0cba861..d9edc0cac 100644
  
  # Xerces
  casa_find( XERCES
-@@ -1266,8 +1270,8 @@ casa_find( XERCES
+@@ -1266,8 +1271,8 @@ casa_find( XERCES
    PREFIX_HINTS ${XERCES_ROOT_DIR}
    INCLUDES xercesc/util/XercesVersion.hpp
    LIBS xerces-c
@@ -552,7 +552,7 @@ index fb0cba861..d9edc0cac 100644
  )
  if( XERCES_VERSION VERSION_EQUAL   3.2 OR
      XERCES_VERSION VERSION_GREATER 3.2 )
-@@ -1294,11 +1298,11 @@ casa_find( RPFITS
+@@ -1294,11 +1299,11 @@ casa_find( RPFITS
    LIBS rpfits
    #RUN_VERSION names_.rpfitsversion
    PREFIX_HINTS ${RPFITS_ROOT_DIR}
@@ -566,7 +566,7 @@ index fb0cba861..d9edc0cac 100644
    VERSION 4.3
    INCLUDES readline/readline.h #depends on <cstdio> to compile
    LIBS readline ncurses
-@@ -1335,7 +1339,7 @@ casa_find( LIBSAKURA
+@@ -1335,7 +1340,7 @@ casa_find( LIBSAKURA
  #                         #
  ###########################
  
@@ -575,7 +575,7 @@ index fb0cba861..d9edc0cac 100644
  
  
  #########################
-@@ -1357,45 +1361,45 @@ casa_config_end()
+@@ -1357,45 +1362,45 @@ casa_config_end()
  
  # for linux RPM & binary distros libgraphics contains pgplot (linked in)...
  if( APPLE )
