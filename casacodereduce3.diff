@@ -1,5 +1,12 @@
+diff --git a/asap b/asap
+deleted file mode 160000
+index d55a3ae24..000000000
+--- a/asap
++++ /dev/null
+@@ -1 +0,0 @@
+-Subproject commit d55a3ae24a923d8e198b6356176c71cfe0cb9bb7
 diff --git a/code/CMakeLists.txt b/code/CMakeLists.txt
-index fb0cba861..3286b0eb9 100644
+index fb0cba861..be3f70a98 100644
 --- a/code/CMakeLists.txt
 +++ b/code/CMakeLists.txt
 @@ -46,15 +46,15 @@ message("SVNINFOSTATUS: ${SVNINFOSTATUS}")
@@ -552,13 +559,26 @@ index fb0cba861..3286b0eb9 100644
  )
  if( XERCES_VERSION VERSION_EQUAL   3.2 OR
      XERCES_VERSION VERSION_GREATER 3.2 )
-@@ -1294,11 +1299,11 @@ casa_find( RPFITS
-   LIBS rpfits
-   #RUN_VERSION names_.rpfitsversion
-   PREFIX_HINTS ${RPFITS_ROOT_DIR}
+@@ -1288,17 +1293,17 @@ endif ( NOT SQLITE_FOUND )
+ #
+ # RPFITS (Fortran)
+ #
+-casa_find( RPFITS
+-  VERSION 2.11
+-  INCLUDES RPFITS.h
+-  LIBS rpfits
+-  #RUN_VERSION names_.rpfitsversion
+-  PREFIX_HINTS ${RPFITS_ROOT_DIR}
 -  DEPENDS FORTRAN 
-+  DEPENDS FORTRAN
- )
+-)
++# casa_find( RPFITS
++#   VERSION 2.11
++#   INCLUDES RPFITS.h
++#   LIBS rpfits
++#   #RUN_VERSION names_.rpfitsversion
++#   PREFIX_HINTS ${RPFITS_ROOT_DIR}
++#   DEPENDS FORTRAN
++# )
  
  # Readline
 -casa_find( READLINE 
