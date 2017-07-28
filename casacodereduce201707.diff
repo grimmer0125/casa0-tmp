@@ -1,0 +1,740 @@
+diff --git a/code/CMakeLists.txt b/code/CMakeLists.txt
+index 5bab7d70a..0dc83301a 100644
+--- a/code/CMakeLists.txt
++++ b/code/CMakeLists.txt
+@@ -948,6 +948,7 @@ if( NOT SKIP_PGPLOT )
+      endif()
+   endif()
+   casa_find( PGPLOT
++    NO_LINK
+     VERSION 5.3.1
+     PREFIX_HINTS ${PGPLOT_ROOT_DIR}
+     INCLUDES cpgplot.h
+@@ -958,6 +959,7 @@ endif()
+ # WCSLIB
+ if( NOT SKIP_PGPLOT )
+   casa_find( WCSLIB
++NO_LINK
+     VERSION 4.3
+     PREFIX_HINTS ${WCSLIB_ROOT_DIR}
+     INCLUDES wcslib/wcsconfig.h
+@@ -974,6 +976,7 @@ if( NOT SKIP_PGPLOT )
+     DEPENDS PGPLOT )
+ else()
+   casa_find( WCSLIB
++NO_LINK
+     VERSION 4.3
+     PREFIX_HINTS ${WCSLIB_ROOT_DIR}
+     INCLUDES wcslib/wcsconfig.h
+@@ -1053,6 +1056,7 @@ else()
+ endif()
+ 
+ casa_find( CASACORE
++NO_LINK
+            VERSION 2.0.2
+            PREFIX_HINTS ${CASACORE_ROOT_DIR} ${Boost_INCLUDE_DIR}
+            DEFINITIONS "-DUseCasacoreNamespace"
+@@ -1120,79 +1124,79 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux AND GSL_LIBRARIES)
+ endif( )
+ 
+ # Java
+-casa_find( Java
+-  VERSION 1.5
+-  PROGRAMS java
+-  PROG_VERSION "-version")
+-
+-if ( ${dbusxx} STREQUAL dbus-c++ )
+-  # C++ DBus
+-  #
+-  # The header file dbus/dbus-arch-deps.h exists on some but not all systems, in a directory
+-  # for itself
+-  #
+-  # Form all possible DBus prefixes and use them as hints to casa_find()
+-  #
+-  set( dbus_prefix "" )
+-  foreach( _p ${CMAKE_INSTALL_PREFIX} ${casa_packages}  /sw /opt/local /usr/local /opt /usr )
+-    foreach( _l lib lib64 )
+-      list( APPEND dbus_prefix ${_p}/dbus-1.0 )
+-      list( APPEND dbus_prefix ${_p}/${_l}/dbus-1.0 )
+-      list( APPEND dbus_prefix ${_p}/${_l}/qt-4.3.4/dbus )
+-      list( APPEND dbus_prefix ${_p}/${_l}/qt-4.3.4/dbus/${_l}/dbus-1.0 )
+-    endforeach()
+-  endforeach()
+-  # Debian arch specific header location (64 bit only)
+-  list( APPEND dbus_prefix /usr/lib/x86_64-linux-gnu/dbus-1.0)
+-
+-  casa_find( DBUSXX_ARCH
+-    INCLUDES dbus/dbus-arch-deps.h
+-    PREFIX_HINTS /usr/lib64/dbus-1.0 ${DBUS_ARCH_DIR} ${dbus_prefix}
+-    NO_CHECK   # This header does not compile if included directly
+-    NO_REQUIRE
+-    IGNORE /usr/lib64/casapy
+-  )
+-  if( DBUSXX_ARCH_FOUND )
+-    set( dbus_depends DBUSXX_ARCH )
+-  endif()
+-
+-  casa_find( DBUSXX
+-    INCLUDES dbus/dbus.h
+-             dbus-c++/dbus.h
+-    INCLUDES_SUFFIXES dbus-1.0 dbus-c++-1
+-    PREFIX_HINTS ${DBUS_ROOT_DIR} ${dbus_prefix}
+-    LIBS dbus-c++-1
+-    PROGRAMS dbusxx-xml2cpp
+-    DEPENDS ${dbus_depends}
+-    IGNORE /usr/lib64/casapy
+-  )
+-  set( dbus-xml-2-cxx ${DBUSXX_dbusxx-xml2cpp_EXECUTABLE} )
+-  set( DBUS_INCLUDE_DIRS ${DBUSXX_INCLUDE_DIRS} )
+-  set( DBUS_LIBRARIES ${DBUSXX_LIBRARIES} )
+-else( )
+-  casa_find( DBUSPP_ARCH
+-    INCLUDES dbus/dbus-arch-deps.h
+-    PREFIX_HINTS ${DBUS_ARCH_DIR} ${casa_packages}/lib/dbus-1.0 ${dbus-arch-path-guess} /usr/lib64/dbus-1.0
+-    NO_CHECK   # This header does not compile if included directly
+-    NO_REQUIRE
+-  )
+-  if( DBUSPP_ARCH_FOUND )
+-    set( dbus_depends DBUSPP_ARCH )
+-  endif()
+-
+-  casa_find( DBUSPP
+-    INCLUDES dbus/dbus.h
+-             dbus-cpp/dbus.h
+-    INCLUDES_SUFFIXES dbus-1.0 dbus-cpp
+-    PREFIX_HINTS ${DBUS_ROOT_DIR} ${casa_packages}
+-    LIBS ${dbus-cpp-library-name}
+-    PROGRAMS dbuspp-xml2cpp
+-    DEPENDS ${dbus_depends}
+-  )
+-  set( dbus-xml-2-cxx ${DBUSPP_dbuspp-xml2cpp_EXECUTABLE} )
+-  set( DBUS_INCLUDE_DIRS ${DBUSPP_INCLUDE_DIRS} )
+-  set( DBUS_LIBRARIES ${DBUSPP_LIBRARIES} )
+-endif( )
++# casa_find( Java
++#   VERSION 1.5
++#   PROGRAMS java
++#   PROG_VERSION "-version")
++
++# if ( ${dbusxx} STREQUAL dbus-c++ )
++#   # C++ DBus
++#   #
++#   # The header file dbus/dbus-arch-deps.h exists on some but not all systems, in a directory
++#   # for itself
++#   #
++#   # Form all possible DBus prefixes and use them as hints to casa_find()
++#   #
++#   set( dbus_prefix "" )
++#   foreach( _p ${CMAKE_INSTALL_PREFIX} ${casa_packages}  /sw /opt/local /usr/local /opt /usr )
++#     foreach( _l lib lib64 )
++#       list( APPEND dbus_prefix ${_p}/dbus-1.0 )
++#       list( APPEND dbus_prefix ${_p}/${_l}/dbus-1.0 )
++#       list( APPEND dbus_prefix ${_p}/${_l}/qt-4.3.4/dbus )
++#       list( APPEND dbus_prefix ${_p}/${_l}/qt-4.3.4/dbus/${_l}/dbus-1.0 )
++#     endforeach()
++#   endforeach()
++#   # Debian arch specific header location (64 bit only)
++#   list( APPEND dbus_prefix /usr/lib/x86_64-linux-gnu/dbus-1.0)
++#
++#   casa_find( DBUSXX_ARCH
++#     INCLUDES dbus/dbus-arch-deps.h
++#     PREFIX_HINTS /usr/lib64/dbus-1.0 ${DBUS_ARCH_DIR} ${dbus_prefix}
++#     NO_CHECK   # This header does not compile if included directly
++#     NO_REQUIRE
++#     IGNORE /usr/lib64/casapy
++#   )
++#   if( DBUSXX_ARCH_FOUND )
++#     set( dbus_depends DBUSXX_ARCH )
++#   endif()
++#
++#   casa_find( DBUSXX
++#     INCLUDES dbus/dbus.h
++#              dbus-c++/dbus.h
++#     INCLUDES_SUFFIXES dbus-1.0 dbus-c++-1
++#     PREFIX_HINTS ${DBUS_ROOT_DIR} ${dbus_prefix}
++#     LIBS dbus-c++-1
++#     PROGRAMS dbusxx-xml2cpp
++#     DEPENDS ${dbus_depends}
++#     IGNORE /usr/lib64/casapy
++#   )
++#   set( dbus-xml-2-cxx ${DBUSXX_dbusxx-xml2cpp_EXECUTABLE} )
++#   set( DBUS_INCLUDE_DIRS ${DBUSXX_INCLUDE_DIRS} )
++#   set( DBUS_LIBRARIES ${DBUSXX_LIBRARIES} )
++# else( )
++#   casa_find( DBUSPP_ARCH
++#     INCLUDES dbus/dbus-arch-deps.h
++#     PREFIX_HINTS ${DBUS_ARCH_DIR} ${casa_packages}/lib/dbus-1.0 ${dbus-arch-path-guess} /usr/lib64/dbus-1.0
++#     NO_CHECK   # This header does not compile if included directly
++#     NO_REQUIRE
++#   )
++#   if( DBUSPP_ARCH_FOUND )
++#     set( dbus_depends DBUSPP_ARCH )
++#   endif()
++#
++#   casa_find( DBUSPP
++#     INCLUDES dbus/dbus.h
++#              dbus-cpp/dbus.h
++#     INCLUDES_SUFFIXES dbus-1.0 dbus-cpp
++#     PREFIX_HINTS ${DBUS_ROOT_DIR} ${casa_packages}
++#     LIBS ${dbus-cpp-library-name}
++#     PROGRAMS dbuspp-xml2cpp
++#     DEPENDS ${dbus_depends}
++#   )
++#   set( dbus-xml-2-cxx ${DBUSPP_dbuspp-xml2cpp_EXECUTABLE} )
++#   set( DBUS_INCLUDE_DIRS ${DBUSPP_INCLUDE_DIRS} )
++#   set( DBUS_LIBRARIES ${DBUSPP_LIBRARIES} )
++# endif( )
+ 
+ ## ATM
+ #casa_find( ATM
+@@ -1257,15 +1261,15 @@ endif()
+ if(CMAKE_SYSTEM_NAME STREQUAL Linux AND EXISTS /usr/lib64/libqwt.so.6 )
+   find_package(
+     Qt4 ${qt4-version}
+-    COMPONENTS QtCore QtGui QtDBus QtXml QtUiTools QtSvg QtOpenGL)
++    COMPONENTS QtCore QtGui QtXml QtUiTools QtSvg QtOpenGL)
+     set( QT_OPENGL ${QT_QTOPENGL_LIBRARY} )
+ else( )
+   find_package(
+     Qt4 ${qt4-version}
+-    COMPONENTS QtCore QtGui QtDBus QtXml QtUiTools QtSvg )
++    COMPONENTS QtCore QtGui QtXml QtUiTools QtSvg )
+ endif( )
+ if( NOT QT4_FOUND )
+-  message( FATAL_ERROR "Qt4 could not be found. Please check!" )
++  # message( FATAL_ERROR "Qt4 could not be found. Please check!" )
+ endif()
+ 
+ set( QT4_INCLUDE_DIRS ${QT_INCLUDES} CACHE PATH "QT4 include directories" FORCE )
+@@ -1285,23 +1289,23 @@ set( QT4_FOUND TRUE CACHE BOOL "Was QT4 found?" )
+ 
+ 
+ # QWT (requires Qt)
+-casa_find( QWT
+-  VERSION 5.1.1
+-  INCLUDES qwt_global.h
+-  INCLUDES_SUFFIXES qwt qwt-qt4 qwt5
+-  PREFIX_HINTS
+-    ${QWT_ROOT_DIR}
+-    ${casa_packages}/qwt-5.2.0
+-    ${casa_packages}/qwt-5.2.1-svn
+-    ${casa_packages}/qwt-5.2.3-svn
+-    ${casa_packages}/libexec/qt4
+-  LIBS qwt
+-  CPP_VERSION QWT_VERSION_STR
+-  DEPENDS QT4 )
+-
+-if (QWT_VERSION VERSION_EQUAL 6 OR QWT_VERSION VERSION_GREATER 6)
+-    add_definitions( -DQWT6 )
+-endif()
++# casa_find( QWT
++#   VERSION 5.1.1
++#   INCLUDES qwt_global.h
++#   INCLUDES_SUFFIXES qwt qwt-qt4 qwt5
++#   PREFIX_HINTS
++#     ${QWT_ROOT_DIR}
++#     ${casa_packages}/qwt-5.2.0
++#     ${casa_packages}/qwt-5.2.1-svn
++#     ${casa_packages}/qwt-5.2.3-svn
++#     ${casa_packages}/libexec/qt4
++#   LIBS qwt
++#   CPP_VERSION QWT_VERSION_STR
++#   DEPENDS QT4 )
++#
++# if (QWT_VERSION VERSION_EQUAL 6 OR QWT_VERSION VERSION_GREATER 6)
++#     add_definitions( -DQWT6 )
++# endif()
+ 
+ # Xerces
+ casa_find( XERCES
+@@ -1331,14 +1335,14 @@ endif ( NOT SQLITE_FOUND )
+ #
+ # RPFITS (Fortran)
+ #
+-casa_find( RPFITS
+-  VERSION 2.11
+-  INCLUDES RPFITS.h
+-  LIBS rpfits
+-  #RUN_VERSION names_.rpfitsversion
+-  PREFIX_HINTS ${RPFITS_ROOT_DIR}
+-  DEPENDS FORTRAN
+-)
++# casa_find( RPFITS
++#   VERSION 2.11
++#   INCLUDES RPFITS.h
++#   LIBS rpfits
++#   #RUN_VERSION names_.rpfitsversion
++#   PREFIX_HINTS ${RPFITS_ROOT_DIR}
++#   DEPENDS FORTRAN
++# )
+ 
+ # Readline
+ casa_find( READLINE
+@@ -1378,7 +1382,7 @@ casa_find( LIBSAKURA
+ #                         #
+ ###########################
+ 
+-include (GoogleTestInstall)
++# include (GoogleTestInstall)
+ 
+ 
+ #########################
+@@ -1400,43 +1404,43 @@ casa_config_end()
+ 
+ # for linux RPM & binary distros libgraphics contains pgplot (linked in)...
+ if( APPLE )
+-  casa_add_module( graphics CASACORE PGPLOT WCSLIB Boost)
++  # casa_add_module( graphics CASACORE PGPLOT WCSLIB Boost)
+ else()
+   if( NOT SKIP_PGPLOT )
+-    casa_add_module( graphics CASACORE PGPLOT X11 WCSLIB Boost)
++    # casa_add_module( graphics CASACORE PGPLOT X11 WCSLIB Boost)
+   else()
+-    casa_add_module( graphics CASACORE X11 WCSLIB Boost)
++    # casa_add_module( graphics CASACORE X11 WCSLIB Boost)
+   endif()
+ endif()
+-casa_add_module( atmosphere )
++# casa_add_module( atmosphere )
+ casa_add_module( stdcasa CASACORE Boost )
+-casa_add_module( parallel CASACORE Boost )
+-casa_add_module( casadbus CASACORE DBUS Boost)
+-casa_add_module( casaqt CASACORE QT4 QWT XERCES graphics stdcasa Boost)
++# casa_add_module( parallel CASACORE Boost )
++# casa_add_module( casadbus CASACORE DBUS Boost)
++# casa_add_module( casaqt CASACORE QT4 QWT XERCES graphics stdcasa Boost)
+ ###casa_add_module ( CasaDataObjects CASACORE)
+ casa_add_module( components stdcasa CASACORE Boost GSL)
+ casa_add_module( imageanalysis CASACORE components)
+-casa_add_module( asdmstman CASACORE Boost )
+-casa_add_module( msvis CASACORE Boost asdmstman ) # WarningsAsErrors)
+-casa_add_module( mstransform CASACORE stdcasa imageanalysis msvis)
+-casa_add_module( synthesis CASACORE atmosphere stdcasa casadbus asdmstman Boost SQLITE ${CASAMPI} imageanalysis msvis mstransform LIBSAKURA)
+-casa_add_module( flagging CASACORE Boost stdcasa casadbus synthesis casaqt QT4 msvis mstransform)
+-casa_add_module( spectrallines CASACORE imageanalysis Boost SQLITE)
+-casa_add_module( guitools CASACORE QT4 QWT synthesis)
+-casa_add_module( display CASACORE WCSLIB QT4 casaqt guitools synthesis imageanalysis Boost stdcasa casadbus spectrallines components)
+-casa_add_module( plotms CASACORE QT4 casaqt synthesis Boost )
+-casa_add_module( calanalysis CASACORE synthesis Boost)
+-casa_add_module( alma CASACORE LIBXML2 LIBXSLT Boost synthesis msvis)
++# casa_add_module( asdmstman CASACORE Boost )
++# casa_add_module( msvis CASACORE Boost asdmstman ) # WarningsAsErrors)
++# casa_add_module( mstransform CASACORE stdcasa imageanalysis msvis)
++# casa_add_module( synthesis CASACORE atmosphere stdcasa casadbus asdmstman Boost SQLITE ${CASAMPI} imageanalysis msvis mstransform LIBSAKURA)
++# casa_add_module( flagging CASACORE Boost stdcasa casadbus synthesis casaqt QT4 msvis mstransform)
++# casa_add_module( spectrallines CASACORE imageanalysis Boost SQLITE)
++# casa_add_module( guitools CASACORE QT4 QWT synthesis)
++# casa_add_module( display CASACORE WCSLIB QT4 casaqt guitools synthesis imageanalysis Boost stdcasa casadbus spectrallines components)
++# casa_add_module( plotms CASACORE QT4 casaqt synthesis Boost )
++# casa_add_module( calanalysis CASACORE synthesis Boost)
++# casa_add_module( alma CASACORE LIBXML2 LIBXSLT Boost synthesis msvis)
+ #casa_add_module( alma_v3 CASACORE LIBXML2 LIBXSLT Boost synthesis)
+ #casa_add_module( oldalma CASACORE LIBXML2 Boost )
+-casa_add_module( nrao CASACORE Boost)
+-casa_add_module( atnf CASACORE Boost RPFITS)
+-casa_add_module( miriad CASACORE Boost components)
+-casa_add_module( casa_sakura CASACORE Boost LIBSAKURA)
+-casa_add_module( singledishfiller CASACORE )
+-casa_add_module( singledish CASACORE casa_sakura singledishfiller msvis mstransform)
+-casa_add_module( bnmin1 Boost GSL GSLCBLAS CASACORE )
+-casa_add_module( air_casawvr CASACORE bnmin1 Boost synthesis WCSLIB CFITSIO LAPACK )
++# casa_add_module( nrao CASACORE Boost)
++# casa_add_module( atnf CASACORE Boost RPFITS)
++# casa_add_module( miriad CASACORE Boost components)
++# casa_add_module( casa_sakura CASACORE Boost LIBSAKURA)
++# casa_add_module( singledishfiller CASACORE )
++# casa_add_module( singledish CASACORE casa_sakura singledishfiller msvis mstransform)
++# casa_add_module( bnmin1 Boost GSL GSLCBLAS CASACORE )
++# casa_add_module( air_casawvr CASACORE bnmin1 Boost synthesis WCSLIB CFITSIO LAPACK )
+ 
+ if (UseCrashReporter AND NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+    add_subdirectory( crash)
+diff --git a/code/components/CMakeLists.txt b/code/components/CMakeLists.txt
+index d27923158..1b71ff105 100644
+--- a/code/components/CMakeLists.txt
++++ b/code/components/CMakeLists.txt
+@@ -45,8 +45,8 @@ casa_add_library( components
+     ComponentModels/C11Timer.cc
+     ComponentModels/TabularSpectrum.cc
+     ComponentModels/TwoSidedShape.cc
+-    
+-    
++
++
+     SpectralComponents/CompiledSpectralElement.cc
+     SpectralComponents/GaussianMultipletSpectralElement.cc
+     SpectralComponents/GaussianSpectralElement.cc
+@@ -63,7 +63,7 @@ casa_add_library( components
+     SpectralComponents/SpectralList.cc
+     SpectralComponents/SpectralListFactory.cc
+ )
+-install (FILES 
++install (FILES
+     ComponentModels/ComponentList.h
+     ComponentModels/ComponentShape.h
+     ComponentModels/ComponentType.h
+@@ -95,7 +95,7 @@ install (FILES
+     ComponentModels/TwoSidedShape.h
+ 	DESTINATION include/casacode/components/ComponentModels
+ )
+-install (FILES 
++install (FILES
+     SpectralComponents/CompiledSpectralElement.h
+     SpectralComponents/GaussianMultipletSpectralElement.h
+     SpectralComponents/GaussianSpectralElement.h
+@@ -144,6 +144,6 @@ casa_add_assay( components SpectralComponents/test/tProfileFit1D.cc )
+ casa_add_assay( components SpectralComponents/test/tSpectralFit.cc )
+ 
+ casa_add_unit_test( MODULES components SOURCES ComponentModels/test/tLimbDarkenedDiskShape.cc )
+-casa_add_google_test( MODULES components SOURCES ComponentModels/test/FluxStandard_GTest.cc ComponentModels/test/FluxStandardTest.cc )
+-casa_add_google_test( MODULES components SOURCES ComponentModels/test/EphemObjFluxStandard_GTest.cc ComponentModels/test/FluxStandardTest.cc )
+-casa_add_google_test( MODULES components SOURCES ComponentModels/test/FluxStandard2_GTest.cc ComponentModels/test/FluxStandardTest.cc )
++# casa_add_google_test( MODULES components SOURCES ComponentModels/test/FluxStandard_GTest.cc ComponentModels/test/FluxStandardTest.cc )
++# casa_add_google_test( MODULES components SOURCES ComponentModels/test/EphemObjFluxStandard_GTest.cc ComponentModels/test/FluxStandardTest.cc )
++# casa_add_google_test( MODULES components SOURCES ComponentModels/test/FluxStandard2_GTest.cc ComponentModels/test/FluxStandardTest.cc )
+diff --git a/code/imageanalysis/CMakeLists.txt b/code/imageanalysis/CMakeLists.txt
+index 01f8add7d..be58451d4 100644
+--- a/code/imageanalysis/CMakeLists.txt
++++ b/code/imageanalysis/CMakeLists.txt
+@@ -284,7 +284,7 @@ casa_add_assay( imageanalysis IO/test/tRegionTextParser.cc )
+ 
+ casa_add_assay( imageanalysis Regions/test/tCasacRegionManager.cc )
+ 
+-casa_add_google_test (MODULES imageanalysis SOURCES ImageAnalysis/test/ImageMaskHandler_Gtest.cc ImageAnalysis/test/ImageMaskHandlerTest.cc)
++# casa_add_google_test (MODULES imageanalysis SOURCES ImageAnalysis/test/ImageMaskHandler_Gtest.cc ImageAnalysis/test/ImageMaskHandlerTest.cc)
+ 
+ casa_add_unit_test ( MODULES imageanalysis SOURCES Annotations/test/tAnnAnnulus.cc )
+ casa_add_unit_test ( MODULES imageanalysis SOURCES Annotations/test/tAnnCenterBox.cc )
+@@ -305,4 +305,3 @@ casa_add_unit_test ( MODULES imageanalysis SOURCES ImageAnalysis/test/tComponent
+ casa_add_unit_test ( MODULES imageanalysis SOURCES ImageAnalysis/test/tImage2DConvolver.cc )
+ casa_add_unit_test ( MODULES imageanalysis SOURCES ImageAnalysis/test/tImageCollapser.cc )
+ casa_add_unit_test ( MODULES imageanalysis SOURCES ImageAnalysis/test/tImageStatsCalculator.cc )
+-
+diff --git a/code/install/target.cmake b/code/install/target.cmake
+index 7530a7dd4..0a9164306 100644
+--- a/code/install/target.cmake
++++ b/code/install/target.cmake
+@@ -26,8 +26,8 @@
+ # In CASA, it does not make sense to build without also installing
+ # the build products. Therefore...
+ #
+-# Create a target which ensures that the install target is 
+-# always run as part of all. 
++# Create a target which ensures that the install target is
++# always run as part of all.
+ #
+ # For this to work, all other targets must be added as dependencies
+ # of this "inst" target. This is done in the macro's below using add_dependencies()
+@@ -63,8 +63,8 @@ macro( casa_add_library module )
+ 
+   # Create the target lib<module>, but set the output library
+   # filename to lib<module>.<suffix> (which would have defaulted
+-  # to liblib<module>.<suffix>). The target named <module> is the 
+-  # umbrella target for all targets (libraries, executables, ...) 
++  # to liblib<module>.<suffix>). The target named <module> is the
++  # umbrella target for all targets (libraries, executables, ...)
+   # in this subdirectory.
+ 
+   add_library( lib${module} ${ARGN} )
+@@ -133,31 +133,31 @@ endmacro()
+ #     <module>_INCLUDE_DIRS
+ #     <module>_DEFINITIONS
+ #     <module>_LINK_TO
+-# 
++#
+ # Fixme: move qt4, dbus, alma special cases
+ # to client code
+ 
+ macro( casa_add_module module )
+ 
+-  set (options WarningsAsErrors) 
++  set (options WarningsAsErrors)
+   set (oneValueArgs ) # None
+   set (multiValueArgs )
+ 
+-  cmake_parse_arguments (casa_add_module "${options}" "${oneValueArgs}" 
++  cmake_parse_arguments (casa_add_module "${options}" "${oneValueArgs}"
+                          "${multiValueArgs}" ${ARGN})
+ 
+   set( _dependencies ${casa_add_module_UNPARSED_ARGUMENTS})
+ 
+   # Internal target to update this module including dependencies,
+   # then install this module, excluding dependencies
+-  add_custom_target( 
++  add_custom_target(
+     ${module}_install
+-    COMMAND ${CMAKE_BUILD_TOOL} install 
++    COMMAND ${CMAKE_BUILD_TOOL} install
+     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/${module}
+     )
+ 
+   # Target to update and install this module, excluding dependencies
+-  add_custom_target( 
++  add_custom_target(
+     ${module}_fast
+     COMMAND ${CMAKE_BUILD_TOOL} install/fast
+     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/${module}
+@@ -168,7 +168,7 @@ macro( casa_add_module module )
+   add_custom_target( ${module} COMMENT "Updating ${module}..." )
+   add_dependencies( ${module} ${module}_install )
+ 
+-  # If WarningsAsErrors was specified, then add a compiler flag to treat 
++  # If WarningsAsErrors was specified, then add a compiler flag to treat
+   # warnings as error for this module
+ 
+   if ( casa_add_module_WarningsAsErrors )
+@@ -195,8 +195,8 @@ macro( casa_add_module module )
+         message( FATAL_ERROR "${_dep} is listed as dependency for ${module}, but both ${_dep}_INCLUDE_DIRS and ${_dep}_LIBRARIES are undefined!" )
+       endif()
+     endif()
+-    
+-    # INCLUDE_DIRS 
++
++    # INCLUDE_DIRS
+     # Add each of the dependent's include dirs
+     # to this module's include dirs
+     # (if not already contained in _INCLUDE_DIRS)
+@@ -206,14 +206,14 @@ macro( casa_add_module module )
+ 
+     endforeach()
+ 
+-    # DEFINITIONS 
++    # DEFINITIONS
+     foreach( _def ${${_dep}_DEFINITIONS} )
+ 
+       casa_append( ${module}_DEFINITIONS ${_def} )
+ 
+     endforeach()
+ 
+-    # LINK_TO 
++    # LINK_TO
+     # Unlike include dirs, libraries do not have
+     # to be transitively propagated.
+     # E.g. if A links to (depends on) B and B links to C
+@@ -225,7 +225,7 @@ macro( casa_add_module module )
+ 
+       # External library
+ 
+-      set( ${module}_LINK_TO 
++      set( ${module}_LINK_TO
+         ${${module}_LINK_TO}
+         ${${_dep}_LIBRARIES} )
+ 
+@@ -233,8 +233,8 @@ macro( casa_add_module module )
+       # Another CASA module
+ 
+       set(
+-        ${module}_LINK_TO 
+-        ${${module}_LINK_TO} 
++        ${module}_LINK_TO
++        ${${module}_LINK_TO}
+         lib${_dep} )
+ 
+       add_dependencies( ${module} ${_dep}_install )
+@@ -244,8 +244,8 @@ macro( casa_add_module module )
+     # Generated code need build dir in include path
+     if( ${_dep} STREQUAL "DBUS" OR
+         ${_dep} STREQUAL "QT4" )
+-      
+-      set( ${module}_INCLUDE_DIRS 
++
++      set( ${module}_INCLUDE_DIRS
+         ${${module}_INCLUDE_DIRS}
+         ${CMAKE_BINARY_DIR} )
+ 
+@@ -256,7 +256,7 @@ macro( casa_add_module module )
+         ${module} STREQUAL "oldalma" OR
+ 	${module} STREQUAL "alma_v3")
+ 
+-      set( ${module}_INCLUDE_DIRS 
++      set( ${module}_INCLUDE_DIRS
+         ${${module}_INCLUDE_DIRS}
+         ${CMAKE_SOURCE_DIR}/${module}/ASDM
+         ${CMAKE_SOURCE_DIR}/${module}/ASDMBinaries
+@@ -281,7 +281,7 @@ endmacro()
+ #
+ # casa_add_python( module
+ #                  target_name
+-#                  installation_directory 
++#                  installation_directory
+ #                  source1 [source2 ...]
+ #                )
+ #
+@@ -302,7 +302,7 @@ endmacro()
+ #
+ #   casa_add_pymodule( module name source1 [source2 ...] )
+ #
+-# Creates a python module. 
++# Creates a python module.
+ # The module is always linked to libxmlcasa and ${xmlcasa_LINK_TO}.
+ #
+ 
+@@ -358,13 +358,13 @@ endmacro()
+ #
+ macro( casa_add_check_module)
+ 
+-    set (options ) 
++    set (options )
+     set (oneValueArgs TEST) # None
+     set (multiValueArgs MODULES)
+ 
+-    cmake_parse_arguments (casa_add_check "${options}" "${oneValueArgs}" 
++    cmake_parse_arguments (casa_add_check "${options}" "${oneValueArgs}"
+                            "${multiValueArgs}" ${ARGN})
+-  
++
+     set (modules ${casa_add_check_MODULES})
+     set (test ${casa_add_check_TEST})
+ 
+@@ -412,9 +412,9 @@ endmacro ()
+ 
+ #
+ # casa_add_unit_test( MODULES module [submodule [subsubmodule]  ...]
+-#                     SOURCES source ... 
+-#                     [LIBRARIES library1 [library2] ...] 
+-#                     [INCLUDE_DIRS dir1 [dir2] ...] 
++#                     SOURCES source ...
++#                     [LIBRARIES library1 [library2] ...]
++#                     [INCLUDE_DIRS dir1 [dir2] ...]
+ #                     [NOT_READY])
+ #
+ #      Add a unit test. The name of the test will be the basename of
+@@ -425,19 +425,19 @@ endmacro ()
+ #      build and test process (usually used for legacy unit tests awaiting
+ #      vetting).
+ #
+-# Example: 
++# Example:
+ #
+ # casa_add_unit_test (msvis VisibilityIterator_Test.cc)
+ #
+ macro( casa_add_unit_test)
+ 
+-  set (options NOT_READY COMMIT_ONLY) 
++  set (options NOT_READY COMMIT_ONLY)
+   set (oneValueArgs) # None
+   set (multiValueArgs LIBRARIES COMMAND_ARGUMENTS INCLUDE_DIRS SOURCES MODULES) # None
+ 
+-  cmake_parse_arguments (casa_unit_test "${options}" "${oneValueArgs}" 
++  cmake_parse_arguments (casa_unit_test "${options}" "${oneValueArgs}"
+                          "${multiValueArgs}" ${ARGN})
+-  
++
+   list (GET casa_unit_test_SOURCES 0 firstSource)
+   get_filename_component( testName ${firstSource} NAME_WE )
+   get_filename_component(path ${firstSource} PATH)
+@@ -468,7 +468,7 @@ macro( casa_add_unit_test)
+       set_property (TARGET ${testName} APPEND PROPERTY COMPILE_FLAGS "-Werror")
+     endif ()
+   endif ()
+-  
++
+   # add_executable( ${testName} EXCLUDE_FROM_ALL ${sources} ) # not part of main build
+   # target_link_libraries( ${testName} lib${module} ${casa_unit_test_LIBRARIES})
+ 
+@@ -487,8 +487,8 @@ macro( casa_add_unit_test)
+ 
+     # This unit test is ready for normal use.  Add it as a runnable unit test both
+     # globally and within its module.
+-    
+-    add_test( ${testName} ${CASA_assay} ${CMAKE_CURRENT_BINARY_DIR}/${testName} 
++
++    add_test( ${testName} ${CASA_assay} ${CMAKE_CURRENT_BINARY_DIR}/${testName}
+               ${casa_unit_test_COMMAND_ARGUMENTS})
+ 
+     add_dependencies( unit_test ${testName} )
+@@ -510,15 +510,15 @@ macro( casa_add_unit_test)
+     message ("WARNING Unit test ${firstSource} not ready for normal unit test usage.")
+ 
+     if (NOT TARGET unit_test_unready) # create the unit_test_unready target if it doesn't exist
+- 
++
+        add_custom_target (unit_test_unready)
+-    
++
+     endif (NOT TARGET unit_test_unready)
+ 
+     if (NOT TARGET unit_test_unready_${module}) # create unit_test_unready_MODULE if needed
+ 
+        add_custom_target (unit_test_unready_${module})
+-    
++
+     endif (NOT TARGET unit_test_unready_${module})
+ 
+     # Add the test so that unit_test_unready and unit_test_unready_MODULE targets will depend on it.
+@@ -533,13 +533,13 @@ macro( casa_add_unit_test)
+ endmacro()
+ 
+ # casa_add_google_test (MODULES module [submodule [subsubmodule] ...] SOURCES source1 [source2] ... [LIB library1 [library2] ...])
+-# 
++#
+ # Adds a google-test unit test to the module.
+ #
+ # module - The name of the module (e.g., msvis, synthesis, etc.); the module is used to name the
+ #          library containing the module (e.g., libmsvis, libsynthesis)
+ #
+-# sources - The source files that make up the test.  
++# sources - The source files that make up the test.
+ #           The first source file is taken as the name of
+ #           the test executable (e.g., msvis/MSVis/MyTest.cc -->
+ #           executable MyTest).  Paths of the source files are usually
+@@ -561,43 +561,7 @@ endmacro()
+ #             code/install/assay script.  # # An XML file testName.xml
+ #             will be produced when the test is run.  # macro
+ #             (casa_add_google_test)
+-macro (casa_add_google_test)
+-
+-    # Parse the arguments
+-
+-    set (options NOT_ON_APPLE)
+-    set (oneValueArgs ) 
+-    set (multiValueArgs SOURCES LIBS MODULES) # the lists of source files and libraries
+-    cmake_parse_arguments (google_test "${options}" "${oneValueArgs}"
+-                           "${multiValueArgs}"  ${ARGN})
+ 
+-    list(GET google_test_SOURCES 0 testName)
+-    get_filename_component (testName ${testName} NAME_WE)
+-
+-    if (DEFINED APPLE AND ${google_test_NOT_ON_APPLE})
+-
+-        message ("WARNING:: Test ${testName} disabled on Apple platform.")
+-
+-    else ()
+-
+-        # The Google Test install logic in cmake will put the needed include and library
+-        # below the directory stored in the variable GtestRoot.
+-
+-        set (gtestIncludeDirectory ${GoogleTest_ReleaseRoot}/include)
+-        set (gtestLibrary ${GoogleTest_LibraryDir}/libgtest.a)
+-
+-        set (libraries ${gtestLibrary})
+-        list (APPEND gtestLibrary ${google_test_LIBS})
+-
+-        casa_add_unit_test (MODULES ${google_test_MODULES} SOURCES ${google_test_SOURCES} 
+-                            LIBRARIES ${libraries} # gtest + provide libs
+-                            INCLUDE_DIRS ${gtestIncludeDirectory}) # gtest include dirs
+-
+-        add_dependencies (${CasaTestName} ${GoogleTest_Target})
+-
+-    endif ()
+-
+-endmacro ()
+ 
+ # casa_add_demo (module sourceFile1 [sourceFile2 ...])
+ #
+@@ -606,7 +570,7 @@ endmacro ()
+ # intended to serve as an example to other developers.
+ #
+ # The demo program will be built as part of the normal casa and module builds.
+-# This will help reduce the incidence of bit-rot; however, since the application 
++# This will help reduce the incidence of bit-rot; however, since the application
+ # will not be executed as part of any of CASA's automatic processes there is
+ # some chance that the program could become unintentionally obsolete.
+ #
+@@ -641,4 +605,4 @@ macro (casa_add_demo module)
+ 
+   add_dependencies (${executableName} lib${module})
+ 
+-endmacro ()
+\ No newline at end of file
++endmacro ()
